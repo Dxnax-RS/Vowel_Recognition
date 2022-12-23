@@ -1,0 +1,115 @@
+classifier <- function(method, trainingClass, dataFrame, test, target){
+	if(method == "neural net" || method == "neural network" || method == "NN")
+	{	
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		NeuralNet <- neuralnet(class~., dataFrame, linear.output = FALSE)
+		result <- predict(NeuralNet, test)
+		confusionMatrix <- table(target, apply(result, 1, which.max))
+
+		return(confusionMatrix)
+	}
+	if(method == "support vector machine" || method == "SVM")
+	{	
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		SVM <- svm(class~., dataFrame)
+		result <- predict(SVM, test)
+		confusionMatrix <- table(factor(target), result)
+
+		return(confusionMatrix)
+	}
+	if(method == "gaussian naive bayes" || method == "gaussian bayes" || method == "GNB")
+	{
+		Gaussian <- gaussian_naive_bayes(as.matrix(dataFrame), trainingClass)
+		result <- predict(Gaussian, as.matrix(test), type = "class")
+		confusionMatrix <- table(factor(target), result)
+
+		return(confusionMatrix)
+	}
+	if(method == "random forest" || method == "forest" || method == "RF")
+	{
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		rForest <- randomForest(class~., dataFrame, type = "classification", importance = TRUE, proximity = TRUE)
+		result <- predict(rForest, test)	
+		confusionMatrix <- table(target, result)
+		
+		return(confusionMatrix)
+	}
+	if(method == "decision tree" || method == "tree" || method == "DT")
+	{
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		vTree <- tree(class~., dataFrame)
+		result <- predict(vTree, test, type = "class")
+		confusionMatrix <- table(target, result)
+
+		return(confusionMatrix)
+	}
+	if(method == "C50")
+	{	
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		C50 <- C5.0(class~., dataFrame)
+		result <- predict(C50, test)
+		confusionMatrix <- table(factor(target), result)
+
+		return(confusionMatrix)
+	}
+	if(method == "bootstrap aggregation tree" || method == "bagging" || method == "BAT")
+	{	
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		bagTree <- bagging(class~., dataFrame)
+		result <- predict(bagTree, test, type = "class")
+		confusionMatrix <- table(factor(target), result)
+
+		return(confusionMatrix)
+	}
+	if(method == "linear discriminant analysis" || method == "LDA")
+	{
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		LDA <- lda(class~., dataFrame)
+		result <- predict(LDA, test)
+		confusionMatrix <- table(factor(target), result$class)
+
+		return(confusionMatrix)
+	}
+	if(method == "quadratic discriminant analysis" || method == "QDA")
+	{
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		QDA <- qda(class~., dataFrame)
+		result <- predict(QDA, test)
+		confusionMatrix <- table(factor(target), result$class)
+
+		return(confusionMatrix)
+	}
+	if(method == "mixture discriminant analysis" || method == "MDA")
+	{
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		MDA <- mda(class~., dataFrame)
+		result <- predict(MDA, test)
+		confusionMatrix <- table(factor(target), result)
+
+		return(confusionMatrix)
+	}
+	if(method == "flexible discriminant analysis" || method == "FDA")
+	{
+		dataFrame <- cbind(dataFrame, class = trainingClass)
+		FDA <- fda(class~., dataFrame)
+		result <- predict(FDA, test)
+		confusionMatrix <- table(factor(target), result)
+
+		return(confusionMatrix)
+	}
+	if(method == "penalized discriminant analysis" || method == "PDA")
+	{
+		result <- PenalizedLDA(as.matrix(dataFrame), as.numeric(as.factor(trainingClass)), as.matrix(test), lambda = 0.5, K = 3)
+		confusionMatrix <- table(as.numeric(as.factor(target)), result$ypred[,3])		
+
+		return(confusionMatrix)
+	}
+	if(method == "k nearest neighbor" || method == "KNN")
+	{
+		result <- knn(as.matrix(dataFrame), as.matrix(test), trainingClass, k = 5)
+		confusionMatrix <- table(factor(target), result)
+
+		return(confusionMatrix)
+	}
+	stop(paste("Your input method =", method, "is not a valid method", sep = " ", collapse = NULL))
+}
